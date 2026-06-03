@@ -1,0 +1,67 @@
+Run the weekly-ops-report skill in scheduled Routine mode.
+
+Read the skill at skills/weekly-ops-report/SKILL.md and follow its four-phase workflow exactly. This is an autonomous run - do not ask for confirmation at any point. Proceed straight through all four phases.
+
+CONFIGURATION:
+- PLATFORM: {clickup | asana | monday | notion}
+- WORKSPACE_SCOPE: {see your platform setup SOP for the right format}
+- SLACK_DESTINATION: {Slack channel ID, D-prefix for DM or C-prefix for channel}
+
+OPTIONAL (leave out for a neutral, professional default):
+- TONE: {neutral | concise | detailed | custom}
+- TONE_NOTES: {free-text voice guidance, only used when TONE is custom}
+- STYLE: {free-text list of hard rules to enforce, e.g. "no em dashes; avoid: leverage, synergy; separator: |"}
+
+(For Notion only, also include if your property names differ from defaults:
+- NOTION_PROPERTY_MAP: status={your status property name}, assignee={your assignee property name}, due={your due date property name})
+
+PHASES:
+
+Phase 1: Load adapters/{PLATFORM}.md and follow the exact pull queries it defines. Use the {PLATFORM} MCP connector. Pull the four buckets: completed in last 7 days, in progress, blocked or at risk, due in next 7 days. Normalize to the common shape and write the JSON pull to the working directory.
+
+Phase 2: Synthesize the one-page report using the locked format in report-template.md. Use clear, professional language. Apply the configured TONE and STYLE if supplied; otherwise use the neutral default.
+
+Phase 3: Verify the report against the three checks in SKILL.md (no fabrication against the JSON pull, any configured STYLE rules satisfied, length under 600 words). Fix any issues and re-verify.
+
+Phase 4: Deliver via the Slack MCP connector. Use slack_send_message with channel_id={SLACK_DESTINATION} and the report as the message body. Open with the week range like "*Weekly ops report - week of Mon Apr 13 to Sun Apr 19*".
+
+If any phase fails - the platform connector returns an error, the Slack send fails, the pull is empty due to API issue (not a slow week) - send a short Slack message to {SLACK_DESTINATION} saying "Weekly ops report failed: [specific error]" instead of a fabricated report. Do not retry silently.
+
+Success criteria: the Slack message is delivered and contains the report in the locked format covering the correct week window.
+
+================================================================
+TRELLO BLOCK - use this version of the prompt instead if PLATFORM is trello
+(Trello has no MCP connector; the adapter calls the Trello REST API with curl
+using credentials from environment variables)
+================================================================
+
+Run the weekly-ops-report skill in scheduled Routine mode.
+
+Read the skill at skills/weekly-ops-report/SKILL.md and follow its four-phase workflow exactly. This is an autonomous run - do not ask for confirmation at any point. Proceed straight through all four phases.
+
+CONFIGURATION:
+- PLATFORM: trello
+- WORKSPACE_SCOPE: {all | comma-separated board IDs, e.g. 5f3a9e...,6b1c2d...}
+- SLACK_DESTINATION: {Slack channel ID, D-prefix for DM or C-prefix for channel}
+
+CREDENTIALS (set these as environment variables / secrets on the Routine, NOT here in the prompt if your plan offers an env-var field):
+- TRELLO_KEY and TRELLO_TOKEN must be available in the environment. The Trello adapter reads them. If your Routine UI has no secrets field, add them as two lines here instead, and use a read-only Trello token.
+
+OPTIONAL (leave out for a neutral, professional default):
+- TONE: {neutral | concise | detailed | custom}
+- TONE_NOTES: {free-text voice guidance, only used when TONE is custom}
+- STYLE: {free-text list of hard rules to enforce, e.g. "no em dashes; avoid: leverage, synergy; separator: |"}
+
+PHASES:
+
+Phase 1: Load adapters/trello.md and follow its exact pull logic. There is NO Trello MCP connector - use the Trello REST API via curl, authenticating with the TRELLO_KEY and TRELLO_TOKEN environment variables. Pull the four buckets: completed in last 7 days, in progress, blocked or at risk, due in next 7 days. Normalize to the common shape and write the JSON pull to the working directory.
+
+Phase 2: Synthesize the one-page report using the locked format in report-template.md. Use clear, professional language. Apply the configured TONE and STYLE if supplied; otherwise use the neutral default.
+
+Phase 3: Verify the report against the three checks in SKILL.md (no fabrication against the JSON pull, any configured STYLE rules satisfied, length under 600 words). Fix any issues and re-verify.
+
+Phase 4: Deliver via the Slack MCP connector. Use slack_send_message with channel_id={SLACK_DESTINATION} and the report as the message body. Open with the week range like "*Weekly ops report - week of Mon Apr 13 to Sun Apr 19*".
+
+If any phase fails - the Trello API returns an error or auth failure, the Slack send fails, or the pull is empty due to an API issue (not a slow week) - send a short Slack message to {SLACK_DESTINATION} saying "Weekly ops report failed: [specific error]" instead of a fabricated report. Do not retry silently.
+
+Success criteria: the Slack message is delivered and contains the report in the locked format covering the correct week window.

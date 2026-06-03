@@ -1,0 +1,8 @@
+# Secrets - never commit credentials
+.env
+.env.*
+*.key
+*.token
+
+# Temp pull data written by the skill at runtime
+weekly-report-pull-*.json
