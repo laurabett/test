@@ -27,6 +27,6 @@ jobs:
           TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_USER_ID: ${{ vars.SLACK_USER_ID || 'U04SPUA65' }}
-          TRELLO_BOARDS: ${{ vars.TRELLO_BOARDS || '69dc17d2508a8dd209d02b69,6a133bb7d1660fa6f40aff27' }}
+          TRELLO_BOARDS: ${{ vars.TRELLO_BOARDS || '69dc17d2508a8dd209d02b69,6a133bb7d1660fa6f40aff27,5ebf60e57aa7682d656d12b4' }}
           TIMEZONE: ${{ vars.TIMEZONE || 'America/New_York' }}
         run: node scripts/daily-trello-report.mjs

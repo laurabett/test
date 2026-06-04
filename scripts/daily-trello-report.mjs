@@ -20,7 +20,7 @@ const TRELLO_TOKEN = process.env.TRELLO_TOKEN;
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 const SLACK_USER_ID = process.env.SLACK_USER_ID || "U04SPUA65";
 const BOARDS = (process.env.TRELLO_BOARDS ||
-  "69dc17d2508a8dd209d02b69,6a133bb7d1660fa6f40aff27")
+  "69dc17d2508a8dd209d02b69,6a133bb7d1660fa6f40aff27,5ebf60e57aa7682d656d12b4")
   .split(",").map((s) => s.trim()).filter(Boolean);
 const TZ = process.env.TIMEZONE || "America/New_York";
 
