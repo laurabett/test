@@ -1,0 +1,32 @@
+name: Daily Trello Outstanding Report
+
+# Runs weekday mornings and posts the "what's still not done" report to Slack.
+# Cron is in UTC. 11:00 UTC = 7:00 AM US Eastern (EDT). After DST ends it is
+# 6:00 AM EST — change to "0 12 * * 1-5" if you want to hold 7:00 AM year-round.
+on:
+  schedule:
+    - cron: "0 11 * * 1-5"   # Mon-Fri, 11:00 UTC
+  workflow_dispatch: {}        # lets you run it manually from the Actions tab
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Send daily report
+        env:
+          TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_USER_ID: ${{ vars.SLACK_USER_ID || 'U04SPUA65' }}
+          TRELLO_BOARDS: ${{ vars.TRELLO_BOARDS || '69dc17d2508a8dd209d02b69,6a133bb7d1660fa6f40aff27' }}
+          TIMEZONE: ${{ vars.TIMEZONE || 'America/New_York' }}
+        run: node scripts/daily-trello-report.mjs
