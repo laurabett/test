@@ -198,6 +198,41 @@ Convert every card to the standard shape Phase 2 expects:
 - **due_date**: the card `due` in ISO, or `null`.
 - **url**: `shortUrl`.
 
+## Daily mode (REPORT=daily)
+
+When the invocation requests the **daily outstanding-work report** instead of the
+weekly summary, skip completion detection entirely. You only need open cards.
+
+1. Run **Step 0** (resolve boards) and **Step 1** (board name, lists, members) as
+   normal.
+2. Run only **Step 2a** (the open-card snapshot). Do not pull actions (2b) - there
+   is no completed bucket in daily mode.
+3. Classify each open card's list using the Step 1 list map, but for grouping
+   purposes keep the **actual list name** (the daily report groups by board > list,
+   not by the four buckets).
+4. Compute a due flag for each card against today (user's timezone):
+   `overdue` (due < today), `due_today`, `due_soon` (due within 3 days),
+   `future` (due later), or `none` (no due date).
+5. Normalize to the common shape (Step 4) plus a `due_flag` field, and group the
+   output by board, then by list:
+
+```json
+{
+  "board": "Andersonville Seminary",
+  "lists": [
+    { "name": "In Progress",
+      "cards": [ { "id": "...", "name": "...", "assignee": "...",
+                   "due_date": "ISO or null", "due_flag": "overdue", "url": "..." } ] }
+  ]
+}
+```
+
+6. Write this grouped JSON to `/tmp/daily-open-pull-YYYY-MM-DD.json` for Phase 3.
+
+Everything else (which boards, auth, edge cases) is identical to weekly mode. A
+"done"-named list normally contains finished work, so by default **exclude
+done-named lists** from the daily open report; include all other open lists.
+
 ## Step 5 - Write the JSON
 
 Save the four buckets to `/tmp/weekly-report-pull-YYYY-MM-DD.json` for the Phase 3

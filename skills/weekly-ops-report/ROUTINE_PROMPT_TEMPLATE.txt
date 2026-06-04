@@ -65,3 +65,36 @@ Phase 4: Deliver via the Slack MCP connector. Use slack_send_message with channe
 If any phase fails - the Trello API returns an error or auth failure, the Slack send fails, or the pull is empty due to an API issue (not a slow week) - send a short Slack message to {SLACK_DESTINATION} saying "Weekly ops report failed: [specific error]" instead of a fabricated report. Do not retry silently.
 
 Success criteria: the Slack message is delivered and contains the report in the locked format covering the correct week window.
+
+================================================================
+DAILY TRELLO BLOCK - use this for the daily "what's still not done" report
+(REPORT=daily; runs weekday mornings; lists every open card grouped by board/list)
+================================================================
+
+Run the weekly-ops-report skill in scheduled Routine mode, daily report variant.
+
+Read the skill at skills/weekly-ops-report/SKILL.md and follow it with REPORT=daily. This is an autonomous run - do not ask for confirmation. Proceed straight through.
+
+CONFIGURATION:
+- REPORT: daily
+- PLATFORM: trello
+- WORKSPACE_SCOPE: {comma-separated board IDs}
+- SLACK_DESTINATION: {Slack channel ID, D-prefix for DM}
+
+CREDENTIALS (no secrets field on the Routine, so they go here; use a READ-ONLY token):
+- TRELLO_KEY: {your Trello API key}
+- TRELLO_TOKEN: {your read-only Trello token}
+
+PHASES:
+
+Phase 1: Load adapters/trello.md and follow its "Daily mode" section. There is NO Trello MCP connector - use the Trello REST API via curl, authenticating with the TRELLO_KEY and TRELLO_TOKEN values above. Pull ALL open cards from the scoped boards (open-card snapshot only, no completion detection). Compute a due flag per card. Group by board, then list. Write the grouped JSON to the working directory.
+
+Phase 2: Synthesize the report using report-template-daily.md. List every open card grouped by board and list, with due-date flags and the open-items snapshot line. Do NOT apply the one-page cap - list everything. Neutral, factual tone.
+
+Phase 3: Verify against the daily checks in report-template-daily.md: no fabrication (every card appears in the Phase 1 JSON) and completeness (count of listed cards equals the snapshot total). Fix and re-verify.
+
+Phase 4: Deliver via the Slack MCP connector. Use slack_send_message with channel_id={SLACK_DESTINATION} and the report as the body. Open with the date line like "*Outstanding work - Tue Jun 3*".
+
+If any phase fails (Trello API/auth error, Slack send fails, or empty pull due to an API issue), send a short Slack message to {SLACK_DESTINATION} saying "Daily outstanding report failed: [specific error]" instead of a fabricated report. Do not retry silently.
+
+Success criteria: the Slack message is delivered and lists every open card grouped by board and list for today.

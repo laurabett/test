@@ -31,6 +31,17 @@ This skill reads config from the Routine prompt that invokes it.
 
 If any of the three required values is missing from the invocation, ask the user before proceeding. Never guess.
 
+**Optional (report type):**
+
+0. **REPORT** - `weekly` (default) or `daily`.
+   - `weekly` produces the four-bucket Monday summary using `report-template.md`
+     (completed, in progress, blocked, upcoming over a 7-day window).
+   - `daily` produces a "what's still not done" report using
+     `report-template-daily.md`: every open card, grouped by board and list, with
+     due-date flags and no Completed section. Adapters run in daily mode (see the
+     adapter's "Daily mode" section) - open cards only, no completion detection,
+     no one-page cap.
+
 **Optional (voice and style):**
 
 4. **TONE** - `neutral` (default), `concise`, `detailed`, or `custom`. Controls how the report reads. See `report-template.md`.
