@@ -25,7 +25,6 @@ The Action posts via a Slack bot, so you need a bot token.
 2. Name it (e.g. "Ops Report Bot"), pick the **YYMI** workspace, **Create App**.
 3. Left sidebar → **OAuth & Permissions** → scroll to **Scopes** → **Bot Token Scopes** → add:
    - `chat:write`
-   - `im:write`
 4. Scroll up → **Install to Workspace** → **Allow**.
 5. Copy the **Bot User OAuth Token** (starts with `xoxb-`). This is `SLACK_BOT_TOKEN`.
 

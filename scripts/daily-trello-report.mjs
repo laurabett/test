@@ -10,7 +10,7 @@
 // Environment variables (set as GitHub Actions secrets / vars):
 //   TRELLO_KEY        - Trello API key
 //   TRELLO_TOKEN      - Trello read-only token
-//   SLACK_BOT_TOKEN   - Slack bot token (xoxb-...), scopes: chat:write, im:write
+//   SLACK_BOT_TOKEN   - Slack bot token (xoxb-...), scope: chat:write
 //   SLACK_USER_ID     - Slack user to DM (default: U04SPUA65)
 //   TRELLO_BOARDS     - comma-separated board IDs (default: the two configured)
 //   TIMEZONE          - IANA tz for "today" + due flags (default America/New_York)
@@ -159,10 +159,9 @@ async function slack(method, payload) {
 }
 
 async function postToSlack(text) {
-  // Open (or reuse) the bot's DM channel with the user, then post.
-  const conv = await slack("conversations.open", { users: SLACK_USER_ID });
-  const channel = conv.channel.id;
-  await slack("chat.postMessage", { channel, text, mrkdwn: true, unfurl_links: false });
+  // Post directly to the user ID. Slack auto-opens the bot's DM with the user,
+  // so this works with just the chat:write scope (no im:write needed).
+  await slack("chat.postMessage", { channel: SLACK_USER_ID, text, mrkdwn: true, unfurl_links: false });
 }
 
 async function main() {
