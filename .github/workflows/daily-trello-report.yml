@@ -1,11 +1,11 @@
 name: Daily Trello Outstanding Report
 
 # Runs every morning (incl. weekends) and posts the "what's still not done"
-# report to Slack. Cron is in UTC. 11:00 UTC = 7:00 AM US Eastern (EDT). After
-# DST ends it is 6:00 AM EST — change to "0 12 * * *" to hold 7:00 AM year-round.
+# report to Slack. Cron is in UTC. 12:00 UTC = 8:00 AM US Eastern (EDT). After
+# DST ends it is 7:00 AM EST — change to "0 13 * * *" to hold 8:00 AM year-round.
 on:
   schedule:
-    - cron: "0 11 * * *"   # every day, 11:00 UTC
+    - cron: "0 12 * * *"   # every day, 12:00 UTC (8 AM ET during EDT)
   workflow_dispatch: {}        # lets you run it manually from the Actions tab
 
 jobs:
