@@ -11,14 +11,15 @@
 //   TRELLO_KEY        - Trello API key
 //   TRELLO_TOKEN      - Trello read-only token
 //   SLACK_BOT_TOKEN   - Slack bot token (xoxb-...), scope: chat:write
-//   SLACK_USER_ID     - Slack user to DM (default: U04SPUA65)
+//   SLACK_CHANNEL     - Slack channel ID to post to (default: #opps-report).
+//                       The bot must be a member of this channel.
 //   TRELLO_BOARDS     - comma-separated board IDs (default: the two configured)
 //   TIMEZONE          - IANA tz for "today" + due flags (default America/New_York)
 
 const TRELLO_KEY = process.env.TRELLO_KEY;
 const TRELLO_TOKEN = process.env.TRELLO_TOKEN;
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
-const SLACK_USER_ID = process.env.SLACK_USER_ID || "U04SPUA65";
+const SLACK_CHANNEL = process.env.SLACK_CHANNEL || "C0BB1T50196"; // #opps-report
 const BOARDS = (process.env.TRELLO_BOARDS ||
   "69dc17d2508a8dd209d02b69,6a133bb7d1660fa6f40aff27,5ebf60e57aa7682d656d12b4")
   .split(",").map((s) => s.trim()).filter(Boolean);
@@ -159,9 +160,8 @@ async function slack(method, payload) {
 }
 
 async function postToSlack(text) {
-  // Post directly to the user ID. Slack auto-opens the bot's DM with the user,
-  // so this works with just the chat:write scope (no im:write needed).
-  await slack("chat.postMessage", { channel: SLACK_USER_ID, text, mrkdwn: true, unfurl_links: false });
+  // Post to the configured channel. The bot must be a member of it (chat:write).
+  await slack("chat.postMessage", { channel: SLACK_CHANNEL, text, mrkdwn: true, unfurl_links: false });
 }
 
 async function main() {

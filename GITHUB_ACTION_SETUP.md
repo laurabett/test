@@ -42,7 +42,7 @@ Add these three secrets:
 | `SLACK_BOT_TOKEN` | the `xoxb-...` bot token from step 1 |
 
 (Optional **Variables** — same screen, "Variables" tab — only if you want to override defaults:
-`SLACK_USER_ID`, `TRELLO_BOARDS`, `TIMEZONE`.)
+`SLACK_CHANNEL` (the channel ID the bot posts to; bot must be a member), `TRELLO_BOARDS`, `TIMEZONE`.)
 
 ### 3. Test it
 
